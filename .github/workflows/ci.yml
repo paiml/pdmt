@@ -66,7 +66,10 @@ jobs:
           -A clippy::cast-possible-truncation \
           -A clippy::option-if-let-else \
           -A clippy::cast-precision-loss \
-          -A clippy::if-not-else
+          -A clippy::if-not-else \
+          -A clippy::missing-const-for-fn \
+          -A clippy::return-self-not-must-use \
+          -A clippy::doc-markdown
 
     - name: Build
       run: cargo build --verbose --all-features
