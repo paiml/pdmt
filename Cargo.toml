@@ -102,7 +102,17 @@ name = "todo_generation"
 path = "examples/todo_generation.rs"
 required-features = ["todo-validation"]
 
-# Additional examples and benchmarks disabled for now
+[[example]]
+name = "resume_builder"
+path = "examples/resume_builder.rs"
+required-features = ["todo-validation"]
+
+[[example]]
+name = "readme_builder"
+path = "examples/readme_builder.rs"
+required-features = ["todo-validation"]
+
+# Additional examples for future implementation
 # [[example]]
 # name = "mcp_integration"
 # path = "examples/mcp_integration.rs"
