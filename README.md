@@ -2,7 +2,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/pdmt.svg)](https://crates.io/crates/pdmt)
 [![Documentation](https://docs.rs/pdmt/badge.svg)](https://docs.rs/pdmt)
-[![Build Status](https://github.com/noahgift/pdmt/workflows/CI/badge.svg)](https://github.com/noahgift/pdmt/actions)
+[![Build Status](https://github.com/paiml/pdmt/workflows/CI/badge.svg)](https://github.com/paiml/pdmt/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A high-performance, deterministic templating library for Model Context Protocol (MCP) applications, designed for generating consistent, validated todo lists and structured content with quality enforcement.
@@ -160,7 +160,7 @@ We welcome contributions! Areas include:
 ### Development Setup
 
 ```bash
-git clone https://github.com/noahgift/pdmt
+git clone https://github.com/paiml/pdmt
 cd pdmt
 cargo build --all-features
 make test
@@ -173,4 +173,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 - **Documentation**: [docs.rs/pdmt](https://docs.rs/pdmt)
-- **Issues**: [GitHub Issues](https://github.com/noahgift/pdmt/issues)
+- **Issues**: [GitHub Issues](https://github.com/paiml/pdmt/issues)

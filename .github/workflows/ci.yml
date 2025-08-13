@@ -146,7 +146,7 @@ jobs:
     - name: Install Rust 1.80.0
       uses: dtolnay/rust-toolchain@master
       with:
-        toolchain: 1.80.0
+        toolchain: 1.82.0
 
     - name: Check build with MSRV
       run: cargo check --all-features
