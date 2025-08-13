@@ -108,5 +108,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Operating Systems**: Linux, macOS, Windows
 - **Architectures**: x86_64, aarch64
 
-[Unreleased]: https://github.com/noahshinn/pdmt/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/noahshinn/pdmt/releases/tag/v1.0.0
+[Unreleased]: https://github.com/noahgift/pdmt/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/noahgift/pdmt/releases/tag/v1.0.0
