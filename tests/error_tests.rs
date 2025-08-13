@@ -1,4 +1,4 @@
-use pdmt::error::{Error, Result, TemplateError, ValidationError};
+use pdmt::error::{Error, TemplateError, ValidationError};
 
 #[test]
 fn test_error_creation_and_display() {

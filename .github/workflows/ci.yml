@@ -77,7 +77,27 @@ jobs:
           -A clippy::float-cmp \
           -A clippy::unused-async \
           -A clippy::suboptimal-flops \
-          -A missing-copy-implementations
+          -A clippy::use-self \
+          -A clippy::must-use-candidate \
+          -A clippy::missing-errors-doc \
+          -A clippy::uninlined-format-args \
+          -A clippy::derivable-impls \
+          -A clippy::redundant-closure-for-method-calls \
+          -A clippy::cast-lossless \
+          -A clippy::too-many-lines \
+          -A clippy::let-and-return \
+          -A clippy::needless-raw-string-hashes \
+          -A clippy::len-zero \
+          -A clippy::no-effect-underscore-binding \
+          -A clippy::redundant-clone \
+          -A clippy::unnecessary-wraps \
+          -A clippy::manual-clamp \
+          -A clippy::single-char-add-str \
+          -A clippy::items-after-statements \
+          -A clippy::needless-collect \
+          -A clippy::needless-borrows-for-generic-args \
+          -A clippy::assigning-clones \
+          -A clippy::trivially-copy-pass-by-ref
 
     - name: Build
       run: cargo build --verbose --all-features

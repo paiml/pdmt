@@ -1,4 +1,4 @@
-use pdmt::models::todo::{Todo, TodoList, TodoPriority, TodoQualityConfig, TodoStatus};
+use pdmt::models::todo::{Todo, TodoList, TodoPriority, TodoQualityConfig};
 use pdmt::validators::todo::{IssueCategory, IssueSeverity, TodoValidator};
 
 #[test]

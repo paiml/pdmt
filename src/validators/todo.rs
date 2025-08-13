@@ -7,7 +7,7 @@ use crate::models::todo::{Todo, TodoList, TodoQualityConfig};
 use std::collections::{HashMap, HashSet};
 
 /// Validator for todo list content
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct TodoValidator {
     config: TodoQualityConfig,
 }
@@ -78,7 +78,7 @@ pub enum IssueCategory {
 }
 
 /// Todo list quality metrics
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct TodoMetrics {
     /// Total number of todos
     pub total_count: usize,

@@ -173,7 +173,7 @@ async fn test_template_engine_error_handling() {
 
 #[test]
 fn test_template_inheritance() {
-    let mut base = TemplateDefinition::new("base", "1.0.0", "Base: {{content}}");
+    let mut _base = TemplateDefinition::new("base", "1.0.0", "Base: {{content}}");
     let mut child = TemplateDefinition::new("child", "1.0.0", "Child: {{content}}");
 
     // Set inheritance
