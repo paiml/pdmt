@@ -1,0 +1,205 @@
+[package]
+name = "pdmt"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.80.0"
+authors = ["Noah Shinn <noah@noahshinn.com>"]
+description = "High-performance, deterministic templating library for Model Context Protocol (MCP) applications with comprehensive todo validation and quality enforcement"
+documentation = "https://docs.rs/pdmt"
+repository = "https://github.com/noahshinn/pdmt"
+homepage = "https://github.com/noahshinn/pdmt"
+license = "MIT OR Apache-2.0"
+keywords = ["template", "mcp", "quality", "deterministic", "todo"]
+categories = ["template-engine", "development-tools", "text-processing"]
+readme = "README.md"
+exclude = ["target/", "*.log", "test_*", "temp_*", "*.profraw", ".pdmt-cache", "proptest-regressions/"]
+
+[features]
+default = ["quality-proxy", "mcp-tools", "todo-validation"]
+full = ["quality-proxy", "mcp-tools", "todo-validation", "streaming", "analytics"]
+
+# Core features
+quality-proxy = ["dep:reqwest"]
+mcp-tools = ["dep:pmcp"]
+todo-validation = ["dep:uuid", "dep:chrono"]
+
+# Optional features
+streaming = ["dep:tokio-stream", "dep:futures-util"]
+analytics = []
+
+# Development features
+test-helpers = []
+property-tests = ["dep:proptest"]
+
+[dependencies]
+# Core serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+serde_json = "1.0"
+
+# Template engine
+handlebars = { version = "6.0", features = ["script_helper"] }
+
+# Error handling
+thiserror = "2.0"
+anyhow = "1.0"
+
+# Async runtime
+tokio = { version = "1.45", features = ["rt-multi-thread", "macros", "fs", "sync"] }
+async-trait = "0.1"
+
+# Utilities
+uuid = { version = "1.17", features = ["v4", "serde"], optional = true }
+chrono = { version = "0.4", features = ["serde"], optional = true }
+tracing = "0.1"
+lazy_static = "1.5"
+regex = "1.11"
+
+# MCP integration (optional)
+pmcp = { version = "1.1", features = ["full", "validation"], optional = true }
+
+# Quality proxy integration (optional)
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], optional = true }
+
+# Streaming support (optional)
+tokio-stream = { version = "0.1", optional = true }
+futures-util = { version = "0.3", optional = true }
+
+# Data structures
+indexmap = { version = "2.10", features = ["serde"] }
+dashmap = "6.1"
+
+# Property testing (optional)
+proptest = { version = "1.7", optional = true }
+
+[dev-dependencies]
+# Testing frameworks
+criterion = { version = "0.6", features = ["html_reports"] }
+rstest = "0.25"
+pretty_assertions = "1.4"
+mockall = "0.13"
+
+# Test utilities
+tempfile = "3.20"
+tokio-test = "0.4"
+insta = { version = "1.43", features = ["yaml", "redactions"] }
+
+# For examples
+clap = { version = "4.5", features = ["derive"] }
+console = "0.15"
+dialoguer = "0.11"
+
+[build-dependencies]
+# Build-time template compilation
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+walkdir = "2.5"
+
+# Binary disabled for now
+
+[[example]]
+name = "todo_generation"
+path = "examples/todo_generation.rs"
+required-features = ["todo-validation"]
+
+# Additional examples and benchmarks disabled for now
+# [[example]]
+# name = "mcp_integration"
+# path = "examples/mcp_integration.rs"
+# required-features = ["mcp-tools", "todo-validation"]
+
+# [[example]]
+# name = "quality_proxy_demo"
+# path = "examples/quality_proxy_demo.rs"
+# required-features = ["quality-proxy", "todo-validation"]
+
+# [[example]]
+# name = "custom_template"
+# path = "examples/custom_template.rs"
+
+# [[bench]]
+# name = "template_performance"
+# harness = false
+# required-features = ["todo-validation"]
+
+# Profile configurations
+[profile.release]
+lto = "thin"
+codegen-units = 1
+opt-level = 3
+strip = "symbols"
+panic = "abort"
+
+[profile.test]
+opt-level = 1
+debug = true
+
+[profile.bench]
+lto = "thin"
+codegen-units = 1
+opt-level = 3
+debug = true
+
+[profile.dev]
+opt-level = 0
+debug = true
+overflow-checks = true
+
+# Documentation configuration
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs", "--html-in-header", "docs/header.html"]
+
+# Cargo-dist configuration for releases
+[package.metadata.dist]
+cargo-dist-version = "0.28.0"
+ci = ["github"]
+installers = ["shell", "powershell", "npm", "homebrew"]
+targets = [
+    "aarch64-apple-darwin",
+    "x86_64-apple-darwin", 
+    "x86_64-unknown-linux-gnu",
+    "x86_64-unknown-linux-musl",
+    "x86_64-pc-windows-msvc"
+]
+pr-run-mode = "plan"
+allow-dirty = ["ci", "msi"]
+
+# Workspace configuration for development
+[workspace]
+members = []
+exclude = ["target", "examples/workspace-test"]
+resolver = "2"
+
+# Development tools configuration
+[package.metadata.cross.target.aarch64-unknown-linux-gnu]
+dockerfile = "cross/Dockerfile.aarch64"
+
+[package.metadata.cross.target.x86_64-unknown-linux-musl]
+dockerfile = "cross/Dockerfile.musl"
+
+# Linting configuration
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "allow"
+missing_debug_implementations = "warn"
+missing_copy_implementations = "allow"
+trivial_casts = "warn"
+trivial_numeric_casts = "warn"
+unused_import_braces = "warn"
+unused_qualifications = "warn"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+cargo = { level = "warn", priority = -1 }
+
+# Allow some pedantic lints for ergonomics
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+missing_docs_in_private_items = "allow"
+use_self = "allow"
+uninlined_format_args = "allow"

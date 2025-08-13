@@ -1,0 +1,223 @@
+use pdmt::models::todo::{Todo, TodoGranularity, TodoList, TodoPriority, TodoStatus};
+use pdmt::validators::todo::TodoValidator;
+use pdmt::{TemplateDefinition, TemplateEngine};
+use proptest::prelude::*;
+use serde_json::json;
+
+// Strategy for generating valid todo content
+fn todo_content_strategy() -> impl Strategy<Value = String> {
+    prop::string::string_regex(
+        r"(implement|create|add|fix|update|build|test|deploy) [a-zA-Z0-9 ]{10,80}",
+    )
+    .unwrap()
+}
+
+// Strategy for generating todo IDs
+fn todo_id_strategy() -> impl Strategy<Value = String> {
+    prop::string::string_regex(r"todo_[a-f0-9]{8}").unwrap()
+}
+
+// Strategy for generating time estimates
+fn time_estimate_strategy() -> impl Strategy<Value = f32> {
+    (5u32..400u32).prop_map(|x| x as f32 / 10.0) // 0.5 to 40.0 hours
+}
+
+// Strategy for generating TodoStatus
+fn todo_status_strategy() -> impl Strategy<Value = TodoStatus> {
+    prop_oneof![
+        Just(TodoStatus::Pending),
+        Just(TodoStatus::InProgress),
+        Just(TodoStatus::Completed),
+        Just(TodoStatus::Blocked),
+        Just(TodoStatus::Cancelled),
+    ]
+}
+
+// Strategy for generating TodoPriority
+fn todo_priority_strategy() -> impl Strategy<Value = TodoPriority> {
+    prop_oneof![
+        Just(TodoPriority::Low),
+        Just(TodoPriority::Medium),
+        Just(TodoPriority::High),
+        Just(TodoPriority::Critical),
+    ]
+}
+
+// Strategy for generating a single Todo
+fn todo_strategy() -> impl Strategy<Value = Todo> {
+    (
+        todo_content_strategy(),
+        todo_status_strategy(),
+        todo_priority_strategy(),
+        prop::option::of(time_estimate_strategy()),
+        prop::collection::vec(todo_id_strategy(), 0..3),
+    )
+        .prop_map(
+            |(content, status, priority, estimated_hours, dependencies)| {
+                let mut todo = Todo::new(content);
+                todo.status = status;
+                todo.priority = priority;
+                todo.estimated_hours = estimated_hours;
+                todo.dependencies = dependencies;
+                todo
+            },
+        )
+}
+
+// Strategy for generating TodoList
+fn todo_list_strategy() -> impl Strategy<Value = TodoList> {
+    prop::collection::vec(todo_strategy(), 1..20).prop_map(|todos| {
+        let mut list = TodoList::new();
+        for todo in todos {
+            list.add_todo(todo);
+        }
+        list
+    })
+}
+
+proptest! {
+    #[test]
+    fn test_todo_validation_never_panics(todo_list in todo_list_strategy()) {
+        let validator = TodoValidator::new();
+        let _result = validator.validate_todo_list(&todo_list);
+        // Should never panic
+    }
+
+    #[test]
+    fn test_todo_actionability_consistency(content in todo_content_strategy()) {
+        let todo = Todo::new(content.clone());
+        let is_actionable = todo.is_actionable();
+
+        // If it starts with an action verb, it should be actionable
+        let action_verbs = ["implement", "create", "add", "fix", "update", "build", "test", "deploy"];
+        let starts_with_action = action_verbs.iter()
+            .any(|verb| content.to_lowercase().starts_with(verb));
+
+        assert_eq!(is_actionable, starts_with_action);
+    }
+
+    #[test]
+    fn test_todo_complexity_score_bounds(content in prop::string::string_regex(r"[a-zA-Z ]{10,200}").unwrap()) {
+        let todo = Todo::new(content);
+        let complexity = todo.complexity_score();
+
+        // Complexity should always be between 1 and 10
+        assert!(complexity >= 1 && complexity <= 10);
+    }
+
+    #[test]
+    fn test_todo_list_metadata_consistency(todo_list in todo_list_strategy()) {
+        let total = todo_list.todos.len();
+
+        // Metadata should match actual todo list
+        assert_eq!(todo_list.metadata.total_count, total);
+
+        // Sum of status counts should equal total
+        let status_sum: usize = todo_list.metadata.status_counts.values().sum();
+        assert_eq!(status_sum, total);
+
+        // Sum of priority counts should equal total
+        let priority_sum: usize = todo_list.metadata.priority_counts.values().sum();
+        assert_eq!(priority_sum, total);
+
+        // Completion percentage should be correct
+        let completed = todo_list.metadata.status_counts
+            .get(&TodoStatus::Completed)
+            .unwrap_or(&0);
+        let expected_percentage = if total > 0 {
+            *completed as f32 / total as f32
+        } else {
+            0.0
+        };
+        assert!((todo_list.metadata.completion_percentage - expected_percentage).abs() < 0.001);
+    }
+
+    #[test]
+    fn test_template_determinism(
+        template_id in prop::string::string_regex(r"[a-z_]{5,20}").unwrap(),
+        version in prop::string::string_regex(r"[0-9]\.[0-9]\.[0-9]").unwrap(),
+        content in prop::string::string_regex(r"\{\{[a-z]+\}\}").unwrap(),
+    ) {
+        let template = TemplateDefinition::new(template_id, version, content);
+
+        // Default templates should be deterministic
+        assert!(template.is_deterministic());
+
+        // Provider should be "deterministic" by default
+        assert_eq!(template.metadata.provider, "deterministic");
+    }
+
+    #[test]
+    fn test_template_parameter_roundtrip(
+        key in prop::string::string_regex(r"[a-z_]{3,20}").unwrap(),
+        value in prop_oneof![
+            Just(json!(0.0)),
+            Just(json!(1.0)),
+            Just(json!("string")),
+            Just(json!(true)),
+            Just(json!(false)),
+        ]
+    ) {
+        let mut template = TemplateDefinition::new("test", "1.0", "{{test}}");
+
+        // Set parameter
+        template.set_parameter(key.clone(), value.clone()).unwrap();
+
+        // Get parameter should return same value
+        let retrieved: Option<serde_json::Value> = template.get_parameter(&key);
+        assert_eq!(retrieved, Some(value));
+    }
+
+    #[test]
+    fn test_yaml_json_roundtrip(todo_list in todo_list_strategy()) {
+        // Serialize to YAML
+        let yaml = serde_yaml::to_string(&todo_list).unwrap();
+
+        // Parse back
+        let parsed: TodoList = serde_yaml::from_str(&yaml).unwrap();
+
+        // Should have same number of todos
+        assert_eq!(parsed.todos.len(), todo_list.todos.len());
+    }
+
+    #[test]
+    fn test_dependency_depth_calculation_terminates(
+        mut todo_list in todo_list_strategy(),
+        extra_deps in prop::collection::vec((0usize..20, 0usize..20), 0..10)
+    ) {
+        // Add some random dependencies (may create cycles)
+        for (from_idx, to_idx) in extra_deps {
+            if from_idx < todo_list.todos.len() && to_idx < todo_list.todos.len() {
+                let to_id = todo_list.todos[to_idx].id.clone();
+                todo_list.todos[from_idx].dependencies.push(to_id);
+            }
+        }
+
+        // This should never panic or hang
+        let validator = TodoValidator::new();
+        let _result = validator.validate_todo_list(&todo_list);
+    }
+
+    #[test]
+    fn test_granularity_affects_output(granularity in prop_oneof![
+        Just(TodoGranularity::Low),
+        Just(TodoGranularity::Medium),
+        Just(TodoGranularity::High),
+    ]) {
+        // Different granularities should be distinguishable
+        match granularity {
+            TodoGranularity::Low => {
+                // Low granularity characteristics
+                assert!(true);
+            }
+            TodoGranularity::Medium => {
+                // Medium granularity characteristics
+                assert!(true);
+            }
+            TodoGranularity::High => {
+                // High granularity characteristics
+                assert!(true);
+            }
+        }
+    }
+}

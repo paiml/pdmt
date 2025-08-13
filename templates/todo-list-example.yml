@@ -1,0 +1,29 @@
+todos:
+  - id: "todo_0_0"
+    content: "Design user authentication schema"
+    status: "pending"
+    priority: "high"
+    estimated_hours: 4.0
+    dependencies: []
+    tags: ["authentication", "design"]
+  - id: "todo_0_1" 
+    content: "Implement user registration endpoint"
+    status: "pending"
+    priority: "medium"
+    estimated_hours: 3.0
+    dependencies: ["todo_0_0"]
+    tags: ["authentication", "backend"]
+  - id: "todo_1_0"
+    content: "Design API endpoint specifications"
+    status: "pending"
+    priority: "high"
+    estimated_hours: 3.0
+    dependencies: []
+    tags: ["api", "design"]
+
+metadata:
+  total_count: 3
+  generated_at: "2025-01-13T12:00:00Z"
+  template_version: "1.0.0"
+  granularity: "high"
+  project_name: "Example Project"
