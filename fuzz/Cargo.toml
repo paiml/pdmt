@@ -19,3 +19,24 @@ path = "fuzz_targets/fuzz_target_1.rs"
 test = false
 doc = false
 bench = false
+
+[[bin]]
+name = "fuzz_template_engine"
+path = "fuzz_targets/fuzz_template_engine.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_todo_validator"
+path = "fuzz_targets/fuzz_todo_validator.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_yaml_parsing"
+path = "fuzz_targets/fuzz_yaml_parsing.rs"
+test = false
+doc = false
+bench = false
