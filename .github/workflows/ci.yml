@@ -108,7 +108,7 @@ jobs:
 
     - name: Test examples
       run: |
-        cargo run --example todo_generation --features="all"
+        cargo run --example todo_generation --features="full" -- --project "CI Test Project" --requirement "Test requirement 1" --requirement "Test requirement 2" --granularity high --max-todos 5 --format yaml
 
     - name: Generate coverage report (Ubuntu stable only)
       if: matrix.os == 'ubuntu-latest' && matrix.rust == 'stable'
