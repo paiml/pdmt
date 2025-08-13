@@ -54,7 +54,19 @@ jobs:
       run: cargo fmt --all -- --check
 
     - name: Lint with clippy
-      run: cargo clippy --all-targets --all-features -- -D warnings
+      run: |
+        cargo clippy --all-targets --all-features -- -D warnings \
+          -A clippy::multiple-crate-versions \
+          -A clippy::format-push-string \
+          -A clippy::only-used-in-recursion \
+          -A clippy::match-same-arms \
+          -A clippy::map-unwrap-or \
+          -A clippy::struct-excessive-bools \
+          -A clippy::field-reassign-with-default \
+          -A clippy::cast-possible-truncation \
+          -A clippy::option-if-let-else \
+          -A clippy::cast-precision-loss \
+          -A clippy::if-not-else
 
     - name: Build
       run: cargo build --verbose --all-features

@@ -4,6 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::fmt::Write;
 
 /// Generated content with metadata
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -131,7 +132,7 @@ impl GeneratedContent {
         if let Some(mapping) = value.as_mapping() {
             for (key, value) in mapping {
                 if let Some(key_str) = key.as_str() {
-                    markdown.push_str(&format!("## {}\n\n", key_str));
+                    write!(markdown, "## {}\n\n", key_str).unwrap();
                     self.value_to_markdown(value, &mut markdown, 0)?;
                     markdown.push('\n');
                 }
@@ -248,7 +249,7 @@ impl GeneratedContent {
     }
 
     /// Get processing time as duration
-    pub fn processing_duration(&self) -> std::time::Duration {
+    pub const fn processing_duration(&self) -> std::time::Duration {
         std::time::Duration::from_millis(self.metadata.processing_time_ms)
     }
 }

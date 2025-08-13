@@ -446,12 +446,14 @@ impl QualityViolation {
     }
 
     /// Add location information
+    #[must_use]
     pub fn with_location<S: Into<String>>(mut self, location: S) -> Self {
         self.location = Some(location.into());
         self
     }
 
     /// Add suggestion
+    #[must_use]
     pub fn with_suggestion<S: Into<String>>(mut self, suggestion: S) -> Self {
         self.suggestion = Some(suggestion.into());
         self

@@ -352,8 +352,8 @@ impl Todo {
         }
     }
 
-    /// Get progress percentage (0.0 for pending, 0.5 for in_progress, 1.0 for completed)
-    pub fn progress(&self) -> f32 {
+    /// Get progress percentage (0.0 for pending, 0.5 for `in_progress`, 1.0 for completed)
+    pub const fn progress(&self) -> f32 {
         match self.status {
             TodoStatus::Pending | TodoStatus::Blocked => 0.0,
             TodoStatus::InProgress => 0.5,

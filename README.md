@@ -3,7 +3,6 @@
 [![Crates.io](https://img.shields.io/crates/v/pdmt.svg)](https://crates.io/crates/pdmt)
 [![Documentation](https://docs.rs/pdmt/badge.svg)](https://docs.rs/pdmt)
 [![Build Status](https://github.com/noahgift/pdmt/workflows/CI/badge.svg)](https://github.com/noahgift/pdmt/actions)
-[![Coverage](https://codecov.io/gh/noahgift/pdmt/branch/main/graph/badge.svg)](https://codecov.io/gh/noahgift/pdmt)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A high-performance, deterministic templating library for Model Context Protocol (MCP) applications, designed for generating consistent, validated todo lists and structured content with quality enforcement.
