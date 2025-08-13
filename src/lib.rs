@@ -1,7 +1,7 @@
 //! # PDMT - Pragmatic Deterministic MCP Templating
 //!
-//! A high-performance, deterministic templating library for Model Context Protocol (MCP) 
-//! applications, designed for generating consistent, validated todo lists and structured 
+//! A high-performance, deterministic templating library for Model Context Protocol (MCP)
+//! applications, designed for generating consistent, validated todo lists and structured
 //! content with quality enforcement.
 //!
 //! ## Features
